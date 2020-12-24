@@ -138,5 +138,8 @@ dmypy.json
 cython_debug/
 
 
-.npy
-.pt
+
+.idea/
+*.npy
+*.pt
+*.pth
