@@ -24,7 +24,7 @@ MODEL:
         NUM_POINTS: 16000
         FUSION: True
         K: 20
-        N_BLOCKS: [2,2]
+        N_BLOCKS: [3,3]
         N_FILTERS: [64,32]
         DYNAMIC: False
         FEATURE_OUT: 16

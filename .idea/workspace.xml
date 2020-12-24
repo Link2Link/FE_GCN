@@ -1,0 +1,266 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="BranchesTreeState">
+    <expand>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="LOCAL_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+      <path>
+        <item name="ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="REMOTE_ROOT" type="e8cecc67:BranchNodeDescriptor" />
+        <item name="GROUP_NODE:origin" type="e8cecc67:BranchNodeDescriptor" />
+      </path>
+    </expand>
+    <select />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="1e9e452f-e985-4405-959c-e468eeb83f24" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/cfgs/PartA2_free.yaml" beforeDir="false" afterPath="$PROJECT_DIR$/cfgs/PartA2_free.yaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Python Script" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="ProjectId" id="1k7h6iWbWoLXjqTDcjga622g5tU" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="2" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent">
+    <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model/backbone" />
+      <recent name="$PROJECT_DIR$/tools/visualization" />
+      <recent name="$PROJECT_DIR$/tools" />
+      <recent name="$PROJECT_DIR$" />
+      <recent name="$PROJECT_DIR$/cfgs" />
+    </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/model/sampler" />
+    </key>
+  </component>
+  <component name="RunManager" selected="Python.main">
+    <configuration name="architecture" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="GCN_Detecter" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/architecture.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="detector3d_template" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="GCN_Detecter" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/../OpenPCDet/pcdet/models/detectors" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/../OpenPCDet/pcdet/models/detectors/detector3d_template.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="main" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="GCN_Detecter" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/main.py" />
+      <option name="PARAMETERS" value="--cfg_file cfgs/PartA2_free.yaml" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="temp" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="GCN_Detecter" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/example/detection" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/example/detection/temp.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="visual" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
+      <module name="GCN_Detecter" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/tools" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/tools/visual.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <list>
+      <item itemvalue="Python.architecture" />
+      <item itemvalue="Python.detector3d_template" />
+      <item itemvalue="Python.main" />
+      <item itemvalue="Python.temp" />
+      <item itemvalue="Python.visual" />
+    </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Python.main" />
+        <item itemvalue="Python.visual" />
+        <item itemvalue="Python.architecture" />
+        <item itemvalue="Python.detector3d_template" />
+        <item itemvalue="Python.temp" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="1e9e452f-e985-4405-959c-e468eeb83f24" name="Default Changelist" comment="" />
+      <created>1605057364311</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1605057364311</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="Vcs.Log.Tabs.Properties">
+    <option name="TAB_STATES">
+      <map>
+        <entry key="MAIN">
+          <value>
+            <State />
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="oldMeFiltersMigrated" value="true" />
+  </component>
+  <component name="WindowStateProjectService">
+    <state x="800" y="598" key="#com.intellij.execution.impl.EditConfigurationsDialog" timestamp="1608776165173">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state x="800" y="598" key="#com.intellij.execution.impl.EditConfigurationsDialog/72.27.3368.1413@72.27.3368.1413" timestamp="1608776165173" />
+    <state x="1539" y="491" width="424" height="491" key="FileChooserDialogImpl" timestamp="1608783903182">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state x="1539" y="491" width="424" height="491" key="FileChooserDialogImpl/72.27.3368.1413@72.27.3368.1413" timestamp="1608783903182" />
+    <state width="3341" height="389" key="GridCell.Tab.0.bottom" timestamp="1608775116705">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="389" key="GridCell.Tab.0.bottom/72.27.3368.1413@72.27.3368.1413" timestamp="1608775116705" />
+    <state width="3341" height="389" key="GridCell.Tab.0.center" timestamp="1608775116705">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="389" key="GridCell.Tab.0.center/72.27.3368.1413@72.27.3368.1413" timestamp="1608775116705" />
+    <state width="3341" height="389" key="GridCell.Tab.0.left" timestamp="1608775116705">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="389" key="GridCell.Tab.0.left/72.27.3368.1413@72.27.3368.1413" timestamp="1608775116705" />
+    <state width="3341" height="389" key="GridCell.Tab.0.right" timestamp="1608775116705">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="389" key="GridCell.Tab.0.right/72.27.3368.1413@72.27.3368.1413" timestamp="1608775116705" />
+    <state width="3341" height="480" key="GridCell.Tab.1.bottom" timestamp="1608253971318">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="480" key="GridCell.Tab.1.bottom/72.27.3368.1413@72.27.3368.1413" timestamp="1608253971318" />
+    <state width="3341" height="480" key="GridCell.Tab.1.center" timestamp="1608253971318">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="480" key="GridCell.Tab.1.center/72.27.3368.1413@72.27.3368.1413" timestamp="1608253971318" />
+    <state width="3341" height="480" key="GridCell.Tab.1.left" timestamp="1608253971318">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="480" key="GridCell.Tab.1.left/72.27.3368.1413@72.27.3368.1413" timestamp="1608253971318" />
+    <state width="3341" height="480" key="GridCell.Tab.1.right" timestamp="1608253971318">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state width="3341" height="480" key="GridCell.Tab.1.right/72.27.3368.1413@72.27.3368.1413" timestamp="1608253971318" />
+    <state x="1237" y="368" width="1037" height="737" key="SettingsEditor" timestamp="1608776455674">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state x="1237" y="368" width="1037" height="737" key="SettingsEditor/72.27.3368.1413@72.27.3368.1413" timestamp="1608776455674" />
+    <state x="1198" y="331" width="1106" height="812" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser" timestamp="1608303223265">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state x="1198" y="331" width="1106" height="812" key="com.intellij.openapi.editor.actions.MultiplePasteAction$ClipboardContentChooser/72.27.3368.1413@72.27.3368.1413" timestamp="1608303223265" />
+    <state x="1448" y="421" width="615" height="624" key="find.popup" timestamp="1608255387300">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state x="1448" y="421" width="615" height="624" key="find.popup/72.27.3368.1413@72.27.3368.1413" timestamp="1608255387300" />
+    <state x="1419" y="349" width="672" height="678" key="search.everywhere.popup" timestamp="1608708063733">
+      <screen x="72" y="27" width="3368" height="1413" />
+    </state>
+    <state x="1419" y="349" width="672" height="678" key="search.everywhere.popup/72.27.3368.1413@72.27.3368.1413" timestamp="1608708063733" />
+  </component>
+</project>
