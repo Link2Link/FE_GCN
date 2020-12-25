@@ -1,8 +1,8 @@
 import torch
 from torch import nn
 from torch_cluster import knn_graph
-
-
+from .graph import TopoGraph
+from .nn import batched_index_select
 class DenseDilated(nn.Module):
     """
     Find dilated neighbor from neighbor list
@@ -100,3 +100,26 @@ class DilatedKnnGraph(nn.Module):
             edge_index.append(edgeindex)
         edge_index = torch.stack(edge_index, dim=1)
         return self._dilated(edge_index)
+
+
+class LocalDynGraph(nn.Module):
+    """
+    balance the global searching and local searching
+    """
+    def __init__(self, k=20, amplify=5):
+        super(LocalDynGraph, self).__init__()
+        self.knn = dense_knn_matrix
+        self.amplify = amplify
+        self.k = k
+    def forward(self, graph:TopoGraph) -> torch.Tensor:
+        pos = graph.pos
+        feature = graph.x
+        edge_index = self.knn(pos, self.k*self.amplify)
+        f_i = batched_index_select(feature, edge_index[1])
+        f_j = batched_index_select(feature, edge_index[0])
+        diff = f_j - f_i
+        dis = torch.sum(torch.square(diff), dim=1)
+        _, nn_idx = torch.topk(-dis, k=self.k)
+        center_idx = torch.arange(0, graph.num_nodes, device=feature.device).repeat(graph.num_batch_size, self.k, 1).transpose(2, 1)
+        edge_index = torch.stack((nn_idx, center_idx), dim=0)
+        return edge_index

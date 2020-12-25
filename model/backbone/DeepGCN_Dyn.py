@@ -6,7 +6,8 @@
 # @note :
 
 import torch
-from .gcn_lib import BasicConv, GraphConv2d, DenseDilatedKnnGraph, ResStaBlock2d, TopoGraph, batched_index_select
+from .gcn_lib import BasicConv, GraphConv2d, DenseDilatedKnnGraph, \
+    ResStaBlock2d, TopoGraph, batched_index_select, LocalDynGraph
 from torch.nn import Sequential as Seq
 
 
@@ -34,6 +35,7 @@ class DeepGCN_Dyn(torch.nn.Module):
         channels = [self.in_channels] + self.n_filters
 
         self.knn = DenseDilatedKnnGraph(self.k, 1, stochastic, epsilon)
+        self.ldg = LocalDynGraph(self.k, amplify=5)
 
         backbone_list = []
         self.feature_count = 0
@@ -75,7 +77,7 @@ class DeepGCN_Dyn(torch.nn.Module):
 
             # update graph
             graph.x = feature
-            topo = self.knn(feature)
+            topo = self.ldg(graph)
             graph.edge_index = topo
             feat_list.append(feature)
 
