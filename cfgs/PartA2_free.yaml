@@ -20,7 +20,7 @@ MODEL:
                 NSAMPLE: [ 16, 16 ]
 
     BACKBONE_3D:
-        NAME: DeepGCN_Sta
+        NAME: DeepGCN_Dyn
         NUM_POINTS: 16000
         FUSION: True
         K: 20

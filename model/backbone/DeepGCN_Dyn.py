@@ -1,25 +1,19 @@
 # _*_ coding: utf-8 _*_
-# @Time : 2020/12/24
+# @Time : 2020/12/25
 # @Author : Chenfei Wang
-# @File : DeepGCN.py
+# @File : DeepGCN_Dyn.py
 # @desc :
 # @note :
 
-
-from pcdet.models.detectors.detector3d_template import Detector3DTemplate
 import torch
-from gcn_lib.dense import BasicConv, GraphConv2d, ResDynBlock2d, DenseDilatedKnnGraph, ResStaBlock2d
+from .gcn_lib import BasicConv, GraphConv2d, DenseDilatedKnnGraph, ResStaBlock2d, TopoGraph, batched_index_select
 from torch.nn import Sequential as Seq
-from model.sampler.FPS import SamplerHead
-from model import sampler
-import numpy as np
-from torch_geometric.data import Data
 
-data_collect = []
 
-class DeepGCN_Sta(torch.nn.Module):
+
+class DeepGCN_Dyn(torch.nn.Module):
     def __init__(self, cfg):
-        super(DeepGCN_Sta, self).__init__()
+        super(DeepGCN_Dyn, self).__init__()
         model_cfg = cfg.BACKBONE_3D
         act = 'relu'
         norm = 'batch'
@@ -45,7 +39,7 @@ class DeepGCN_Sta(torch.nn.Module):
         self.feature_count = 0
         for i in range(len(channels) - 1):
             in_c = channels[i]
-            out_c = channels[i+1]
+            out_c = channels[i + 1]
             res_block_num = self.n_blocks[i] - 1
             backbone_list += [GraphConv2d(in_c, out_c, conv, act, norm, bias, diss=self.diss)]
             backbone_list += [ResStaBlock2d(out_c, conv, act, norm, bias, diss=self.diss) for i in range(res_block_num)]
@@ -71,14 +65,19 @@ class DeepGCN_Sta(torch.nn.Module):
             input = torch.cat([point_coords[bs_mask, 1:], features[bs_mask]], dim=1).transpose(0,1).unsqueeze(-1)
             inputs_list.append(input)
         inputs = torch.stack(inputs_list, dim=0)
-        feat = inputs
+
         pos = inputs[:, 0:3]
-        feature = inputs[:, 3:]
         topo = self.knn(pos)
+        graph = TopoGraph(x=inputs, edge_index=topo, pos=pos)   # the object graph used to transfor the imformation of graph
         feat_list = []
         for i in range(len(self.backbone)):
-            feat, _, _ = self.backbone[i](feat, topo, pos)
-            feat_list.append(feat)
+            feature, graph = self.backbone[i](graph)
+
+            # update graph
+            graph.x = feature
+            topo = self.knn(feature)
+            graph.edge_index = topo
+            feat_list.append(feature)
 
         if self.fusion:
             feats = torch.cat(feat_list, dim=1)
@@ -90,4 +89,3 @@ class DeepGCN_Sta(torch.nn.Module):
         batch_dict['point_features'] = point_features
         batch_dict['point_coords'] = point_coords
         return batch_dict
-

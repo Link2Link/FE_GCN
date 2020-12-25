@@ -1,1 +1,1 @@
-python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4 --extra_tag WGCN14
+python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4 --extra_tag WGCN7 --ckpt 45

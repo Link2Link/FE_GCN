@@ -19,7 +19,6 @@ class MRConv2d(nn.Module):
         x_j, _ = torch.max(x_j - x_i, -1, keepdim=True)
         return self.nn(torch.cat([x, x_j], dim=1))
 
-import time
 
 class EdgeConv2d(nn.Module):
     """
