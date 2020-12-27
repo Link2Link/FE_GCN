@@ -1,5 +1,6 @@
 import torch
 from torch import nn
+from torch.nn import Sequential as Seq, Linear as Lin, Conv2d
 from .nn import BasicConv, batched_index_select
 from .edge import DenseDilatedKnnGraph, DilatedKnnGraph
 import torch.nn.functional as F
@@ -13,6 +14,7 @@ class EdgeConv2d(nn.Module):
         super(EdgeConv2d, self).__init__()
         self.nn = BasicConv([in_channels * 2, out_channels], act, norm, bias)
         self.diss = diss
+        self.att = Conv2d(20, 1, 1, bias=True)
 
     def forward(self, graph:TopoGraph) -> (torch.Tensor, TopoGraph):
         x = graph.x

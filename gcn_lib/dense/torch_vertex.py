@@ -2,6 +2,7 @@ import torch
 from torch import nn
 from .torch_nn import BasicConv, batched_index_select
 from .torch_edge import DenseDilatedKnnGraph, DilatedKnnGraph
+from torch.nn import Sequential as Seq, Linear as Lin, Conv2d
 import torch.nn.functional as F
 
 
@@ -28,6 +29,7 @@ class EdgeConv2d(nn.Module):
         super(EdgeConv2d, self).__init__()
         self.nn = BasicConv([in_channels * 2, out_channels], act, norm, bias)
         self.diss = diss
+        self.att = Conv2d(20, 1, 1, bias=bias)
 
     def forward(self, x, edge_index):
         x_i = batched_index_select(x, edge_index[1])
@@ -39,13 +41,16 @@ class EdgeConv2d(nn.Module):
     def forward(self, x, edge_index, pos):
         x_i = batched_index_select(x, edge_index[1])
         x_j = batched_index_select(x, edge_index[0])
-        feature = self.nn(torch.cat([x_i, x_j - x_i], dim=1))
+        cat_x = torch.cat([x_i, x_j - x_i], dim=1)
+        feature = self.nn(cat_x)
         if self.diss:
             pos_i = batched_index_select(pos, edge_index[1])
             pos_j = batched_index_select(pos, edge_index[0])
             vec = pos_j - pos_i
             dis = torch.sqrt(torch.sum(torch.square(vec), dim=1))
-            suppression = 2 * torch.sigmoid(-dis).unsqueeze(1)
+            scaler = self.att(dis.transpose(0,2).unsqueeze(0)).squeeze(0).transpose(0,2)
+            scaler = torch.tanh(scaler) + 1
+            suppression = 2 * torch.sigmoid(-dis*scaler).unsqueeze(1)
             feature = feature * suppression
         max_value, _ = torch.max(feature, -1, keepdim=True)
         return max_value, edge_index, pos
