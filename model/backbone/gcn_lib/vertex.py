@@ -36,6 +36,15 @@ class EdgeConv2d(nn.Module):
 
         return max_value, graph
 
+class LinearGraphConv2d(nn.Module):
+    def __init__(self, in_channels, out_channels, bias=False):
+        super(LinearGraphConv2d, self).__init__()
+        self.nn = BasicConv([in_channels, out_channels], act=None, norm=None, bias=bias)
+
+    def forward(self, graph: TopoGraph) -> (torch.Tensor, TopoGraph):
+        return self.nn(graph.x), graph
+
+
 class GraphConv2d(nn.Module):
     """
     Static graph convolution layer
@@ -44,6 +53,8 @@ class GraphConv2d(nn.Module):
         super(GraphConv2d, self).__init__()
         if conv == 'edge':
             self.gconv = EdgeConv2d(in_channels, out_channels, act, norm, bias, diss)
+        elif conv == 'linear':
+            self.gconv = LinearGraphConv2d(in_channels, out_channels, bias=bias)
         else:
             raise NotImplementedError('conv:{} is not supported'.format(conv))
 
