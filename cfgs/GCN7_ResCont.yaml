@@ -22,12 +22,13 @@ MODEL:
     BACKBONE_3D:
         NAME: DeepGCN_Sta
         NUM_POINTS: 16000
-        FUSION: True
+        FUSION: False
         K: 20
         N_BLOCKS: [7]
         N_FILTERS: [16]
         FEATURE_OUT: 16
         DISS: False
+        ATT: False
 
 
 

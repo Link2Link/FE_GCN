@@ -28,6 +28,7 @@ MODEL:
         N_FILTERS: [16]
         FEATURE_OUT: 16
         DISS: False
+        ATT: False
 
 
 
