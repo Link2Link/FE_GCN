@@ -73,14 +73,14 @@ class Graph:
     """
     Definition of graph data, making graph inplace and calc distance inplace
     """
-    def __init__(self, pos:torch.Tensor=None, x:torch.Tensor=None, k:int=20, **kwargs):
+    def __init__(self, pos:torch.Tensor=None, x:torch.Tensor=None, k=None, **kwargs):
         self.x = x                          # x is the feature
         self.pos = pos                      # pos is the position
         self.k = k
         for key, item in kwargs.items():
             self[key] = item
-
-        self.makeGraph()
+        if self.k is not None:
+            self.makeGraph()
 
     def makeGraph(self):
         """
@@ -95,6 +95,9 @@ class Graph:
     @property
     def feature_dim(self):
         return self.x.shape[1]
+
+    def __str__(self):
+        return "graph has %d node, %d features, %dx%d edges" % (len(self), self.feature_dim, len(self), self.k)
 
 
 

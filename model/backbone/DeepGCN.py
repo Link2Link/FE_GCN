@@ -37,7 +37,7 @@ class DeepGCN_Sta(torch.nn.Module):
             in_c = channels[i]
             out_c = channels[i+1]
             res_block_num = self.n_blocks[i] - 1
-            backbone_list += [GraphConv(in_c, out_c, conv='edge', bias=True)]
+            backbone_list += [GraphConv(in_c, out_c, conv='edge', bias=True, DISS=self.diss, ATT=self.att)]
             backbone_list += [ResGraphConv(out_c,
                                            conv='edge',
                                            act='relu',
@@ -53,7 +53,7 @@ class DeepGCN_Sta(torch.nn.Module):
         else:
             self.num_features = self.n_filters[-1]
 
-        self.out_block = GraphConv(self.num_features, self.num_point_features, conv='edge', bias=True)
+        self.out_block = GraphConv(self.num_features, self.num_point_features, conv='edge', bias=True, DISS=self.diss, ATT=self.att)
 
     def forward(self, batch_dict):
         features = batch_dict['point_features']
