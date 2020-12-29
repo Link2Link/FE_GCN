@@ -1,1 +1,4 @@
 python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4 --extra_tag WGCN7
+python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4 --extra_tag GCN7_ResCont --cfg_file cfgs/GCN7_ResCont.yaml
+
+python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4 --extra_tag GCN7_ResCont_DISS_ATT --cfg_file cfgs/GCN7_ResCont_DISS_ATT.yaml
