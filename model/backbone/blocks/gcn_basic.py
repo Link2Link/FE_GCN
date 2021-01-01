@@ -187,7 +187,7 @@ class GraphConv(nn.Module):
     Static graph convolution layer
     """
 
-    def __init__(self, in_channels, out_channels, conv='edge', act='relu', norm=None, bias=True, DISS=True, ATT=True, k=20):
+    def __init__(self, in_channels, out_channels, conv='edge', act='relu', norm=None, bias=True, DISS=False, ATT=False, k=20):
         super(GraphConv, self).__init__()
         if conv == 'edge':
             self.gconv = EdgeConv(in_channels, out_channels, act, norm, bias, DISS=DISS, ATT=ATT, k=k)
@@ -198,6 +198,11 @@ class GraphConv(nn.Module):
 
     def forward(self, graph:Graph) -> (torch.Tensor, Graph):
         return self.gconv(graph)
+
+    def forward2(self, graph:Graph) -> Graph:
+        feature, graph = self.gconv(graph)
+        graph.x = feature
+        return graph
 
 class ResGraphConv(nn.Module):
     def __init__(self, in_channels, conv='edge', act='relu', norm=None,

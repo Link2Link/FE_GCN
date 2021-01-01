@@ -5,7 +5,7 @@
 # @desc :
 # @note :
 from pcdet.models.detectors.detector3d_template import Detector3DTemplate
-from model import sampler, backbone
+from model import sampler, backbone, roi_head
 
 
 class GCNPart2A(Detector3DTemplate):
@@ -37,6 +37,18 @@ class GCNPart2A(Detector3DTemplate):
         )
         model_info_dict['module_list'].append(sample_module)
         return sample_module, model_info_dict
+
+    def build_roi_head(self, model_info_dict):
+        if self.model_cfg.get('ROI_HEAD', None) is None:
+            return None, model_info_dict
+        point_head_module = roi_head.__all__[self.model_cfg.ROI_HEAD.NAME](
+            model_cfg=self.model_cfg.ROI_HEAD,
+            input_channels=model_info_dict['num_point_features'],
+            num_class=self.num_class if not self.model_cfg.ROI_HEAD.CLASS_AGNOSTIC else 1,
+        )
+
+        model_info_dict['module_list'].append(point_head_module)
+        return point_head_module, model_info_dict
 
     def forward(self, batch_dict):
         for i, cur_module in enumerate(self.module_list):

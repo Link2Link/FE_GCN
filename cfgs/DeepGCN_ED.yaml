@@ -62,15 +62,16 @@ MODEL:
             }
 
     ROI_HEAD:
-        NAME: PartA2FCHead
+        NAME: gcn_roi
         CLASS_AGNOSTIC: True
 
         SHARED_FC: [256, 256, 256]
         CLS_FC: [256, 256]
         REG_FC: [256, 256]
         DP_RATIO: 0.3
-        DISABLE_PART: True
         SEG_MASK_SCORE_THRESH: 0.0
+
+        GCN_POINT_NUM: 256
 
         NMS_CONFIG:
             TRAIN:
@@ -87,7 +88,7 @@ MODEL:
                 NMS_THRESH: 0.85
 
         ROI_AWARE_POOL:
-            POOL_SIZE: 12
+            POOL_SIZE: 24
             NUM_FEATURES: 128
             MAX_POINTS_PER_VOXEL: 128
 
