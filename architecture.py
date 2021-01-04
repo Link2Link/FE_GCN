@@ -6,6 +6,7 @@
 # @note :
 from pcdet.models.detectors.detector3d_template import Detector3DTemplate
 from model import sampler, backbone, roi_head
+from pcdet.models import roi_heads
 
 
 class GCNPart2A(Detector3DTemplate):
@@ -41,7 +42,7 @@ class GCNPart2A(Detector3DTemplate):
     def build_roi_head(self, model_info_dict):
         if self.model_cfg.get('ROI_HEAD', None) is None:
             return None, model_info_dict
-        point_head_module = roi_head.__all__[self.model_cfg.ROI_HEAD.NAME](
+        point_head_module = roi_heads.__all__[self.model_cfg.ROI_HEAD.NAME](
             model_cfg=self.model_cfg.ROI_HEAD,
             input_channels=model_info_dict['num_point_features'],
             num_class=self.num_class if not self.model_cfg.ROI_HEAD.CLASS_AGNOSTIC else 1,

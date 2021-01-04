@@ -1,6 +1,8 @@
 DATASET: 'KittiDataset'
 #DATA_PATH: '/data-input/kitti'
+#DATA_PATH: '/home/wcf/dataset/kitti'
 DATA_PATH: '/home/llx/code/OpenPCDet/data/kitti'
+
 
 POINT_CLOUD_RANGE: [0, -40, -3, 70.4, 40, 1]
 

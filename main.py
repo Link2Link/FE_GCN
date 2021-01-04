@@ -28,7 +28,7 @@ from train_utils.train_utils import train_model
 # python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--cfg_file', type=str, default='cfgs/DeepGCN_ED.yaml', help='specify the config for training')
+    parser.add_argument('--cfg_file', type=str, default='cfgs/WGCN7_DISS.yaml', help='specify the config for training')
 
     parser.add_argument('--batch_size', type=int, default=1, required=False, help='batch size for training')
     parser.add_argument('--epochs', type=int, default=None, required=False, help='number of epochs to train for')
@@ -150,7 +150,8 @@ if __name__ == '__main__':
             last_epoch = start_epoch + 1
     model.train()  # before wrap to DistributedDataParallel to support fixed some parameters
     if dist_train:
-        model = nn.parallel.DistributedDataParallel(model, device_ids=[cfg.LOCAL_RANK % torch.cuda.device_count()], find_unused_parameters=True)
+        # model = nn.parallel.DistributedDataParallel(model, device_ids=[cfg.LOCAL_RANK % torch.cuda.device_count()], find_unused_parameters=True)
+        model = nn.parallel.DistributedDataParallel(model, device_ids=[cfg.LOCAL_RANK % torch.cuda.device_count()])
     logger.info(model)
 
     lr_scheduler, lr_warmup_scheduler = build_scheduler(
