@@ -41,7 +41,7 @@ class DeepGCN_Sta(torch.nn.Module):
             backbone_list += [ResGraphConv(out_c,
                                            conv='edge',
                                            act='relu',
-                                           norm='batch',
+                                           norm=None,
                                            bias=True,
                                            DISS=self.diss,
                                            ATT=self.att) for i in range(res_block_num)]
