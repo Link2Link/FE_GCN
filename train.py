@@ -22,6 +22,7 @@ from pcdet.models import build_network, model_fn_decorator
 from pcdet.utils import common_utils
 from tensorboardX import SummaryWriter
 from architecture import GCN_Pillar
+from test import repeat_eval_ckpt
 
 from train_utils.optimization import build_optimizer, build_scheduler
 from train_utils.train_utils import train_model
@@ -30,7 +31,7 @@ def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
     parser.add_argument('--cfg_file', type=str, default='cfgs/pointpillar.yaml', help='specify the config for training')
 
-    parser.add_argument('--batch_size', type=int, default=4, required=False, help='batch size for training')
+    parser.add_argument('--batch_size', type=int, default=8, required=False, help='batch size for training')
     parser.add_argument('--epochs', type=int, default=None, required=False, help='number of epochs to train for')
     parser.add_argument('--workers', type=int, default=4, help='number of workers for dataloader')
     parser.add_argument('--extra_tag', type=str, default='default', help='extra tag for this experiment')
@@ -42,7 +43,7 @@ def parse_config():
     parser.add_argument('--fix_random_seed', action='store_true', default=False, help='')
     parser.add_argument('--ckpt_save_interval', type=int, default=1, help='number of training epochs')
     parser.add_argument('--local_rank', type=int, default=0, help='local rank for distributed training')
-    parser.add_argument('--max_ckpt_save_num', type=int, default=10, help='max number of saved checkpoint')
+    parser.add_argument('--max_ckpt_save_num', type=int, default=50, help='max number of saved checkpoint')
     parser.add_argument('--merge_all_iters_to_one_epoch', action='store_true', default=False, help='')
     parser.add_argument('--set', dest='set_cfgs', default=None, nargs=argparse.REMAINDER,
                         help='set extra config keys if needed')
@@ -51,9 +52,6 @@ def parse_config():
     parser.add_argument('--start_epoch', type=int, default=0, help='')
     parser.add_argument('--save_to_file', action='store_true', default=False, help='')
 
-    parser.add_argument('--dynamic', action='store_true', default=False, help='')
-    parser.add_argument('--n_blocks', type=int, default=14, help='layers of backbone')
-    parser.add_argument('--k', type=int, default=20, help='layers of backbone')
 
 
     args = parser.parse_args()
@@ -181,6 +179,27 @@ if __name__ == '__main__':
         merge_all_iters_to_one_epoch=args.merge_all_iters_to_one_epoch
     )
 
+    logger.info('**********************End training %s/%s(%s)**********************\n\n\n'
+                % (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
+    logger.info('**********************Start evaluation %s/%s(%s)**********************' %
+                (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
+    test_set, test_loader, sampler = build_dataloader(
+        dataset_cfg=cfg.DATA_CONFIG,
+        class_names=cfg.CLASS_NAMES,
+        batch_size=args.batch_size,
+        dist=dist_train, workers=args.workers, logger=logger, training=False
+    )
+    eval_output_dir = output_dir / 'eval' / 'eval_with_train'
+    eval_output_dir.mkdir(parents=True, exist_ok=True)
+    args.start_epoch = max(args.epochs - 10, 0)  # Only evaluate the last 10 epochs
+
+    repeat_eval_ckpt(
+        model.module if dist_train else model,
+        test_loader, args, eval_output_dir, logger, ckpt_dir,
+        dist_test=dist_train
+    )
+    logger.info('**********************End evaluation %s/%s(%s)**********************' %
+                (cfg.EXP_GROUP_PATH, cfg.TAG, args.extra_tag))
 
 
 

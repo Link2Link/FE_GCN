@@ -89,15 +89,6 @@ class PillarVFE(VFETemplate):
         self.y_offset = self.voxel_y / 2 + point_cloud_range[1]
         self.z_offset = self.voxel_z / 2 + point_cloud_range[2]
 
-        channels = self.num_filters + self.gcn_channels
-        model_list = []
-        for i in range(len(channels) - 1):
-            in_c = channels[i]
-            out_c = channels[i + 1]
-            model_list += [EdgeConv(in_c, out_c, act='relu', norm='batch', bias=True)]
-
-        self.models = ModuleList(model_list)
-
     def get_output_feature_dim(self):
         return self.num_filters[-1]
 
@@ -142,16 +133,6 @@ class PillarVFE(VFETemplate):
         features *= mask
         for pfn in self.pfn_layers:
             features = pfn(features)
-        features = features.squeeze()
-
-
-        pos = coords[:, 1:4].unsqueeze(-1)
-        batch_idx = coords[:, 0].long()
-        index = knn(pos, batch_idx, k=16)
-        features = features.unsqueeze(-1)
-        for model in self.models:
-            features = model(features, index)
-
         features = features.squeeze()
 
         batch_dict['pillar_features'] = features

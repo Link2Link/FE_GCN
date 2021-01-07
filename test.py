@@ -15,7 +15,7 @@ from pcdet.config import cfg, cfg_from_list, cfg_from_yaml_file, log_config_to_f
 from pcdet.datasets import build_dataloader
 from pcdet.models import build_network
 from pcdet.utils import common_utils
-from architecture import GCNPart2A
+from architecture import GCN_Pillar
 
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
@@ -191,7 +191,7 @@ def main():
         dist=dist_test, workers=args.workers, logger=logger, training=False
     )
 
-    model = GCNPart2A(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=test_set, args=args)
+    model = GCN_Pillar(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=test_set, args=args)
     with torch.no_grad():
         if args.eval_all:
             repeat_eval_ckpt(model, test_loader, args, eval_output_dir, logger, ckpt_dir, dist_test=dist_test)

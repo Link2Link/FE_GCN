@@ -51,7 +51,7 @@ MODEL:
     NAME: PointPillar
 
     VFE:
-        NAME: PillarVFE
+        NAME: GCNVFE
         WITH_DISTANCE: False
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
