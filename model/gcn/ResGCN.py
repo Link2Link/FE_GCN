@@ -5,6 +5,9 @@ from .tools import *
 from .conv import EdgeConv
 data_collect = []
 
+
+
+
 class ResGCN(torch.nn.Module):
     def __init__(self, model_cfg, input_channels=4):
         super(ResGCN, self).__init__()

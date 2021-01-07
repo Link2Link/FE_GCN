@@ -63,7 +63,6 @@ class PillarVFE(VFETemplate):
         self.use_norm = self.model_cfg.USE_NORM
         self.with_distance = self.model_cfg.WITH_DISTANCE
         self.use_absolute_xyz = self.model_cfg.USE_ABSLOTE_XYZ
-        self.gcn_channels = self.model_cfg.GCN_NUM_FILTERS
 
         num_point_features += 6 if self.use_absolute_xyz else 3
         if self.with_distance:
