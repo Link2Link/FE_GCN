@@ -82,6 +82,9 @@ def pick_from_one_file(file, save=True):
     if save:
         file_name = 'eval_pick.csv'
         df.to_csv(file.parent/file_name)
+
+        pd.set_option('display.max_columns', None)
+        print(df)
         print('save to ', file.parent/file_name)
 
 
