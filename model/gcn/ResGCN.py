@@ -12,36 +12,53 @@ class ResGCN(torch.nn.Module):
     def __init__(self, model_cfg, input_channels=4):
         super(ResGCN, self).__init__()
         self.num_filters = model_cfg.NUM_FILTERS
+        self.act = model_cfg.ACT
+        self.norm = model_cfg.NORM
+        self.bias = model_cfg.BIAS
+        self.dgn = model_cfg.DYN_GRAPH
+        self.sum = model_cfg.SUM
+        self.relu = model_cfg.RELU
+
         channels = [input_channels] + self.num_filters
         self.num_point_features = channels[-1]
         model_list = []
         for i in range(len(channels) - 1):
             in_c = channels[i]
-            out_c = channels[i+1]
-            model_list += [EdgeConv(in_c, out_c, act='relu', norm='batch', bias=True)]
+            out_c = channels[i + 1]
+            model_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias)]
 
         self.models = ModuleList(model_list)
 
     def forward(self, batch_dict):
-        # self.print(batch_dict)
-        points = batch_dict['points']
-        input = points[:, 1:].unsqueeze(-1)
-        pos = points[:, 1:4].unsqueeze(-1)
+        coords = batch_dict['voxel_coords']
+        features = batch_dict['pillar_features'].unsqueeze(-1)
 
-        batch_idx = points[:, 0].long()
-        index = knn(pos, batch_idx, k=16)
+        pos = coords[:, 1:4].unsqueeze(-1)
+        batch_idx = coords[:, 0].long()
 
-        feature = input
-        for model in self.models:
-            feature = model(feature, index)
+        if not self.dgn:  # static graph
+            index = knn(pos, batch_idx, k=16)
+            for model in self.models:
+                features = torch.relu(features + model(features, index)) if self.relu \
+                    else features + model(features, index)
+        else:
+            for model in self.models:
+                index = knn(features, batch_idx, k=16)
+                features = torch.relu(features + model(features, index)) if self.relu \
+                    else features + model(features, index)
 
-        batch_dict['gcn_feature'] = feature.squeeze(-1)
+        features = features.squeeze()
+
+        if self.sum:
+            batch_dict['pillar_features'] = batch_dict['pillar_features'] + features
+        else:
+            batch_dict['pillar_features'] = features
         return batch_dict
 
     def print(self, batch_dict):
         print('++++++++++++++++++++++++++++++++++++++++')
         print(batch_dict.keys())
-        for k,v in batch_dict.items():
+        for k, v in batch_dict.items():
             try:
                 shape = v.shape
                 if len(shape) <= 2:

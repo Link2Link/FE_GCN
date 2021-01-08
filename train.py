@@ -29,7 +29,7 @@ from train_utils.train_utils import train_model
 # python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--cfg_file', type=str, default='cfgs/GCNpointpillar.yaml', help='specify the config for training')
+    parser.add_argument('--cfg_file', type=str, default='cfgs/ResGCNpillar.yaml', help='specify the config for training')
 
     parser.add_argument('--batch_size', type=int, default=8, required=False, help='batch size for training')
     parser.add_argument('--epochs', type=int, default=None, required=False, help='number of epochs to train for')
@@ -43,7 +43,7 @@ def parse_config():
     parser.add_argument('--fix_random_seed', action='store_true', default=False, help='')
     parser.add_argument('--ckpt_save_interval', type=int, default=1, help='number of training epochs')
     parser.add_argument('--local_rank', type=int, default=0, help='local rank for distributed training')
-    parser.add_argument('--max_ckpt_save_num', type=int, default=50, help='max number of saved checkpoint')
+    parser.add_argument('--max_ckpt_save_num', type=int, default=15, help='max number of saved checkpoint')
     parser.add_argument('--merge_all_iters_to_one_epoch', action='store_true', default=False, help='')
     parser.add_argument('--set', dest='set_cfgs', default=None, nargs=argparse.REMAINDER,
                         help='set extra config keys if needed')
