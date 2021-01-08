@@ -59,18 +59,29 @@ class EdgeConv(torch.nn.Module):
     forward input : x -> [N, F, 1]
                     index -> [N, K]
     """
-    def __init__(self, in_channels, out_channels, act='relu', norm=None, bias=True):
+    def __init__(self, in_channels, out_channels, act='relu', norm=None, bias=True, diss=True):
         super(EdgeConv, self).__init__()
         self.nn = BasicConv([in_channels * 2, out_channels], act, norm, bias)
+        self.diss = diss
 
-    def forward(self, x, index):
+    def forward(self, x, index, pos):
+
         num_points, k = index.shape
         x_i = x.repeat(1, 1, k)
         x_j = index_select(x, index)
-
         feature = self.nn(torch.cat([x_i, x_j - x_i], dim=1))
-        max_value, _ = torch.max(feature, -1, keepdim=True)
+        if self.diss:
+            pos_i = pos.repeat(1, 1, k)
+            pos_j = index_select(pos, index)
+            vec = pos_j  - pos_i
+            dis = torch.sqrt(torch.sum(torch.square(vec), dim=1, keepdim=True))
+            scale = 2 * torch.sigmoid(-dis)
+            max_value, _ = torch.max(scale*feature, -1, keepdim=True)
+        else:
+            max_value, _ = torch.max(feature, -1, keepdim=True)
 
         return max_value
+
+
 
 

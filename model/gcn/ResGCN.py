@@ -18,6 +18,8 @@ class ResGCN(torch.nn.Module):
         self.dgn = model_cfg.DYN_GRAPH
         self.sum = model_cfg.SUM
         self.relu = model_cfg.RELU
+        self.diss = model_cfg.DISS
+
 
         channels = [input_channels] + self.num_filters
         self.num_point_features = channels[-1]
@@ -25,7 +27,7 @@ class ResGCN(torch.nn.Module):
         for i in range(len(channels) - 1):
             in_c = channels[i]
             out_c = channels[i + 1]
-            model_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias)]
+            model_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias, diss=self.diss)]
 
         self.models = ModuleList(model_list)
 
@@ -39,13 +41,13 @@ class ResGCN(torch.nn.Module):
         if not self.dgn:  # static graph
             index = knn(pos, batch_idx, k=16)
             for model in self.models:
-                features = torch.relu(features + model(features, index)) if self.relu \
-                    else features + model(features, index)
+                features = torch.relu(features + model(features, index, pos)) if self.relu \
+                    else features + model(features, index, pos)
         else:
             for model in self.models:
                 index = knn(features, batch_idx, k=16)
-                features = torch.relu(features + model(features, index)) if self.relu \
-                    else features + model(features, index)
+                features = torch.relu(features + model(features, index, pos)) if self.relu \
+                    else features + model(features, index, pos)
 
         features = features.squeeze()
 

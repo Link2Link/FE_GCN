@@ -15,6 +15,7 @@ class PlainGCN(torch.nn.Module):
         self.bias = model_cfg.BIAS
         self.dgn = model_cfg.DYN_GRAPH
         self.sum = model_cfg.SUM
+        self.diss = model_cfg.DISS
 
 
         channels = [input_channels] + self.num_filters
@@ -23,7 +24,7 @@ class PlainGCN(torch.nn.Module):
         for i in range(len(channels) - 1):
             in_c = channels[i]
             out_c = channels[i + 1]
-            model_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias)]
+            model_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias, diss=self.diss)]
 
         self.models = ModuleList(model_list)
 
@@ -37,11 +38,12 @@ class PlainGCN(torch.nn.Module):
         if not self.dgn:                        # static graph
             index = knn(pos, batch_idx, k=16)
             for model in self.models:
-                features = model(features, index)
+                features = model(features, index, pos)
         else:
             for model in self.models:
                 index = knn(features, batch_idx, k=16)
-                features = model(features, index)
+                features = model(features, index, pos)
+
 
         features = features.squeeze()
 

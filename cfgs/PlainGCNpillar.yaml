@@ -55,10 +55,10 @@ MODEL:
         WITH_DISTANCE: False
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
-        NUM_FILTERS: [64]
+        NUM_FILTERS: [64, 64, 64]
 
     GCN:
-        NAME: ResGCN
+        NAME: PlainGCN
         NUM_FILTERS: [64, 64, 64]
         ACT: relu
         NORM: batch
