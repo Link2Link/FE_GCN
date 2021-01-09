@@ -51,11 +51,13 @@ MODEL:
     NAME: PointPillar
 
     VFE:
-        NAME: PillarVFE
+        NAME: GCNVFE
+        G_TYPE: cluster # center #
         WITH_DISTANCE: False
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
         NUM_FILTERS: [64]
+        GCN_FILTERS: [64, 64, 64]
 
     GCN:
         NAME: PlainGCN
@@ -64,7 +66,8 @@ MODEL:
         NORM: batch
         BIAS: True
         DYN_GRAPH: False
-        SUM: True
+        SUM: False
+        DISS: True
 
     MAP_TO_BEV:
         NAME: PointPillarScatter

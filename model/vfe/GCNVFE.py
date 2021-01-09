@@ -35,7 +35,9 @@ class PFNLayer(nn.Module):
                                for num_part in range(num_parts + 1)]
             x = torch.cat(part_linear_out, dim=0)
         else:
+
             x = self.linear(inputs)
+
         torch.backends.cudnn.enabled = False
         x = self.norm(x.permute(0, 2, 1)).permute(0, 2, 1) if self.use_norm else x
         torch.backends.cudnn.enabled = True
@@ -56,9 +58,8 @@ class GCNVFE(VFETemplate):
         self.use_norm = self.model_cfg.USE_NORM
         self.with_distance = self.model_cfg.WITH_DISTANCE
         self.use_absolute_xyz = self.model_cfg.USE_ABSLOTE_XYZ
-        self.gcn_channels = self.model_cfg.GCN_NUM_FILTERS
 
-        num_point_features += 6 if self.use_absolute_xyz else 3
+        num_point_features += 10 if self.use_absolute_xyz else 7
         if self.with_distance:
             num_point_features += 1
 
@@ -82,15 +83,6 @@ class GCNVFE(VFETemplate):
         self.y_offset = self.voxel_y / 2 + point_cloud_range[1]
         self.z_offset = self.voxel_z / 2 + point_cloud_range[2]
 
-        channels = self.num_filters + self.gcn_channels
-        model_list = []
-        for i in range(len(channels) - 1):
-            in_c = channels[i]
-            out_c = channels[i + 1]
-            model_list += [EdgeConv(in_c, out_c, act='relu', norm='batch', bias=True)]
-
-        self.models = ModuleList(model_list)
-
     def get_output_feature_dim(self):
         return self.num_filters[-1]
 
@@ -109,6 +101,16 @@ class GCNVFE(VFETemplate):
         points_mean = voxel_features[:, :, :3].sum(dim=1, keepdim=True) / voxel_num_points.type_as(voxel_features).view(
             -1, 1, 1)
 
+        # # GCN before pillar
+        # gcn_pos = points_mean.transpose(1,2)
+        # gcn_feature = voxel_features.sum(dim=1, keepdim=True) / voxel_num_points.type_as(voxel_features).view(
+        #     -1, 1, 1)
+        # gcn_feature = gcn_feature.transpose(1,2)
+        feature_mean = voxel_features.sum(dim=1, keepdim=True) / voxel_num_points.type_as(voxel_features).view(-1, 1, 1)
+        feature_mean = feature_mean.repeat([1,voxel_features.shape[1],1])
+
+
+
         f_cluster = voxel_features[:, :, :3] - points_mean
 
         f_center = torch.zeros_like(voxel_features[:, :, :3])
@@ -120,9 +122,9 @@ class GCNVFE(VFETemplate):
                     coords[:, 1].to(voxel_features.dtype).unsqueeze(1) * self.voxel_z + self.z_offset)
 
         if self.use_absolute_xyz:
-            features = [voxel_features, f_cluster, f_center]
+            features = [voxel_features, f_cluster, f_center, feature_mean]
         else:
-            features = [voxel_features[..., 3:], f_cluster, f_center]
+            features = [voxel_features[..., 3:], f_cluster, f_center, feature_mean]
 
         if self.with_distance:
             points_dist = torch.norm(voxel_features[:, :, :3], 2, 2, keepdim=True)
@@ -130,21 +132,12 @@ class GCNVFE(VFETemplate):
         features = torch.cat(features, dim=-1)
 
         voxel_count = features.shape[1]
+
         mask = self.get_paddings_indicator(voxel_num_points, voxel_count, axis=0)
         mask = torch.unsqueeze(mask, -1).type_as(voxel_features)
         features *= mask
         for pfn in self.pfn_layers:
             features = pfn(features)
-        features = features.squeeze()
-
-
-        pos = coords[:, 1:4].unsqueeze(-1)
-        batch_idx = coords[:, 0].long()
-        index = knn(pos, batch_idx, k=16)
-        features = features.unsqueeze(-1)
-        for model in self.models:
-            features = model(features, index)
-
         features = features.squeeze()
 
         batch_dict['pillar_features'] = features
