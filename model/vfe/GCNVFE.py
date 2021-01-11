@@ -59,22 +59,20 @@ class GCNVFE(VFETemplate):
         self.with_distance = self.model_cfg.WITH_DISTANCE
         self.use_absolute_xyz = self.model_cfg.USE_ABSLOTE_XYZ
 
-        num_point_features += 10 if self.use_absolute_xyz else 7
-        if self.with_distance:
-            num_point_features += 1
+        num_point_features += 0
 
         self.num_filters = self.model_cfg.NUM_FILTERS
         assert len(self.num_filters) > 0
         num_filters = [num_point_features] + list(self.num_filters)
 
-        pfn_layers = []
-        for i in range(len(num_filters) - 1):
-            in_filters = num_filters[i]
-            out_filters = num_filters[i + 1]
-            pfn_layers.append(
-                PFNLayer(in_filters, out_filters, self.use_norm, last_layer=(i >= len(num_filters) - 2))
-            )
-        self.pfn_layers = nn.ModuleList(pfn_layers)
+        # pfn_layers = []
+        # for i in range(len(num_filters) - 1):
+        #     in_filters = num_filters[i]
+        #     out_filters = num_filters[i + 1]
+        #     pfn_layers.append(
+        #         PFNLayer(in_filters, out_filters, self.use_norm, last_layer=(i >= len(num_filters) - 2))
+        #     )
+        # self.pfn_layers = nn.ModuleList(pfn_layers)
 
         self.voxel_x = voxel_size[0]
         self.voxel_y = voxel_size[1]
@@ -83,8 +81,38 @@ class GCNVFE(VFETemplate):
         self.y_offset = self.voxel_y / 2 + point_cloud_range[1]
         self.z_offset = self.voxel_z / 2 + point_cloud_range[2]
 
+        gcn = []
+        for i in range(len(num_filters) - 1):
+            in_filters = num_filters[i]
+            out_filters = num_filters[i + 1]
+            gcn.append(
+                EdgeConv(in_filters, out_filters, act='relu', norm='batch', bias=True, diss=True)
+            )
+        self.gcns = nn.ModuleList(gcn)
+
+
     def get_output_feature_dim(self):
         return self.num_filters[-1]
+
+
+    def voxels2points(self, voxel_features, voxel_pos, voxel_num_points):
+        """
+        output: feature -> [N1+N2+..., F]
+                pos -> [N1+N2+..., [B_idx, V_idx, x, y, z]]
+        """
+        voxel_count = voxel_features.shape[1]
+        mask = self.get_paddings_indicator(voxel_num_points, voxel_count, axis=0)
+        # mask = torch.unsqueeze(mask, -1).type_as(voxel_features)
+
+        voxel_pos = voxel_pos.unsqueeze(1).repeat(1, voxel_count, 1)
+
+        feature = voxel_features.view(-1, voxel_features.shape[-1]).contiguous()
+        pos = voxel_pos.view(-1, voxel_pos.shape[-1]).contiguous()
+        g_mask = mask.view(-1).contiguous()
+
+        feature = feature[g_mask]
+        pos = pos[g_mask]
+        return feature, pos, g_mask
 
     def get_paddings_indicator(self, actual_num, max_num, axis=0):
         actual_num = torch.unsqueeze(actual_num, axis + 1)
@@ -101,15 +129,8 @@ class GCNVFE(VFETemplate):
         points_mean = voxel_features[:, :, :3].sum(dim=1, keepdim=True) / voxel_num_points.type_as(voxel_features).view(
             -1, 1, 1)
 
-        # # GCN before pillar
-        # gcn_pos = points_mean.transpose(1,2)
-        # gcn_feature = voxel_features.sum(dim=1, keepdim=True) / voxel_num_points.type_as(voxel_features).view(
-        #     -1, 1, 1)
-        # gcn_feature = gcn_feature.transpose(1,2)
         feature_mean = voxel_features.sum(dim=1, keepdim=True) / voxel_num_points.type_as(voxel_features).view(-1, 1, 1)
         feature_mean = feature_mean.repeat([1,voxel_features.shape[1],1])
-
-
 
         f_cluster = voxel_features[:, :, :3] - points_mean
 
@@ -121,24 +142,49 @@ class GCNVFE(VFETemplate):
         f_center[:, :, 2] = voxel_features[:, :, 2] - (
                     coords[:, 1].to(voxel_features.dtype).unsqueeze(1) * self.voxel_z + self.z_offset)
 
-        if self.use_absolute_xyz:
-            features = [voxel_features, f_cluster, f_center, feature_mean]
-        else:
-            features = [voxel_features[..., 3:], f_cluster, f_center, feature_mean]
+        # useing the voxel pos but not mean of points
+        voxel_pos_0 = coords[:, 3].to(voxel_features.dtype).unsqueeze(1) * self.voxel_x + self.x_offset
+        voxel_pos_1 = coords[:, 2].to(voxel_features.dtype).unsqueeze(1) * self.voxel_y + self.y_offset
+        voxel_pos_2 = coords[:, 1].to(voxel_features.dtype).unsqueeze(1) * self.voxel_z + self.z_offset
+        voxel_pos = torch.cat([voxel_pos_0, voxel_pos_1, voxel_pos_2], dim=-1)
 
-        if self.with_distance:
-            points_dist = torch.norm(voxel_features[:, :, :3], 2, 2, keepdim=True)
-            features.append(points_dist)
-        features = torch.cat(features, dim=-1)
+        batch_idx = coords[:, 0].unsqueeze(-1)
+        voxel_idx = torch.arange(voxel_pos.shape[0], device=voxel_pos.device).unsqueeze(-1)
+        voxel_pos = torch.cat([batch_idx, voxel_idx, voxel_pos], dim=-1)
+        feature, bidx_vidx_pos, g_mask = self.voxels2points(voxel_features, voxel_pos, voxel_num_points)
 
-        voxel_count = features.shape[1]
+        # gcn on entire point cloud
+        pos = bidx_vidx_pos[:, -3:].unsqueeze(-1)
+        batch_idx = bidx_vidx_pos[:, 0].long()
+        feature = feature.unsqueeze(-1)
 
-        mask = self.get_paddings_indicator(voxel_num_points, voxel_count, axis=0)
-        mask = torch.unsqueeze(mask, -1).type_as(voxel_features)
-        features *= mask
-        for pfn in self.pfn_layers:
-            features = pfn(features)
-        features = features.squeeze()
+        index = knn(pos, batch_idx, k=16)
+        for model in self.gcns:
+            feature = model(feature, index, pos)
+        feature = feature.squeeze(-1)
+
+        voxel_features_new = torch.zeros(voxel_features.shape[0]*voxel_features.shape[1], self.get_output_feature_dim(), device=voxel_features.device)
+        voxel_features_new[g_mask] = feature
+        voxel_features_new = voxel_features_new.view(voxel_features.shape[0],
+                                                     voxel_features.shape[1],
+                                                     self.get_output_feature_dim()).contiguous()
+        features = torch.max(voxel_features_new, dim=1, keepdim=True)[0].squeeze()
 
         batch_dict['pillar_features'] = features
         return batch_dict
+
+    def print(self, batch_dict):
+        print('++++++++++++++++++++++++++++++++++++++++')
+        print(batch_dict.keys())
+        for k,v in batch_dict.items():
+            try:
+                shape = v.shape
+                if len(shape) <= 2:
+                    print(k, v.shape)
+                    print(v)
+                else:
+                    print(k, v.shape)
+
+            except:
+                print(k, v)
+        print('----------------------------------------')

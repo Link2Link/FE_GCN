@@ -15,7 +15,7 @@ DATA_CONFIG:
 
         - NAME: transform_points_to_voxels
           VOXEL_SIZE: [0.16, 0.16, 4]
-          MAX_POINTS_PER_VOXEL: 32
+          MAX_POINTS_PER_VOXEL: 64
           MAX_NUMBER_OF_VOXELS: {
             'train': 16000,
             'test': 40000
@@ -57,7 +57,6 @@ MODEL:
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
         NUM_FILTERS: [64]
-        GCN_FILTERS: [64, 64, 64]
 
     GCN:
         NAME: PlainGCN
