@@ -58,7 +58,8 @@ class GCNVFE(VFETemplate):
         self.use_norm = self.model_cfg.USE_NORM
         self.with_distance = self.model_cfg.WITH_DISTANCE
         self.use_absolute_xyz = self.model_cfg.USE_ABSLOTE_XYZ
-
+        self.cylinder = self.model_cfg.CYLINDER
+        self.k = self.model_cfg.K
         num_point_features += 0
 
         self.num_filters = self.model_cfg.NUM_FILTERS
@@ -157,8 +158,10 @@ class GCNVFE(VFETemplate):
         pos = bidx_vidx_pos[:, -3:].unsqueeze(-1)
         batch_idx = bidx_vidx_pos[:, 0].long()
         feature = feature.unsqueeze(-1)
-
-        index = knn(pos, batch_idx, k=16)
+        if self.cylinder:
+            index = knn(pos[:, :2, :], batch_idx, k=self.k)
+        else:
+            index = knn(pos, batch_idx, k=self.k)
         for model in self.gcns:
             feature = model(feature, index, pos)
         feature = feature.squeeze(-1)
