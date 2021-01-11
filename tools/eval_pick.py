@@ -5,12 +5,17 @@ import numpy as np
 import pandas as pd
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--file', type=str, default='/home/llx/work_dir/output/pointpillar/default/eval/eval_all_default/default/log_eval_20210107-103817.txt', help='specify the config for training')
+    parser.add_argument('--file', type=str,
+                        default='/home/llx/work_dir/output/pointpillar/default/eval/eval_all_default/default/log_eval_20210107-103817.txt',
+                        help='specify the file')
+    parser.add_argument('--obj', type=int,
+                        default=0,
+                        help='specify the obj, car:0 ped:1 cyc:2')
 
     args = parser.parse_args()
     return args
 
-def pick_from_one_file(file, save=True):
+def pick_from_one_file(file, save=True, obj=0):
     with open(file, "r") as f:
         data = f.read()
 
@@ -51,7 +56,7 @@ def pick_from_one_file(file, save=True):
     cyc_npy = np.array(cyc_list)
 
     npy = np.concatenate([car_npy, ped_npy, cyc_npy], axis=1)
-    best_epoch = np.argmax(npy[:, 1])
+    best_epoch = np.argmax(npy[:, 1+obj*3])
     best_eval = npy[best_epoch][np.newaxis, :]
 
     npy = np.concatenate([npy, best_eval], axis=0)
@@ -67,6 +72,7 @@ def pick_from_one_file(file, save=True):
                        7: 'cyc:moderate',
                        8: 'cyc:hard',
                        }, inplace=True)
+    obj_dict = {0:'car', 1:'ped', 2:'cyc'}
     df.rename(index={0: 71,
                      1: 72,
                      2: 73,
@@ -77,7 +83,7 @@ def pick_from_one_file(file, save=True):
                      7: 78,
                      8: 79,
                      9: 80,
-                     10: 'best'}, inplace=True)
+                     10: 'best '+ obj_dict[obj]}, inplace=True)
 
     if save:
         file_name = 'eval_pick.csv'
@@ -91,5 +97,5 @@ def pick_from_one_file(file, save=True):
 if __name__ == '__main__':
     args = parse_config()
     file = Path(args.file)
-    pick_from_one_file(file)
+    pick_from_one_file(file, obj=args.obj)
 
