@@ -70,10 +70,14 @@ class EdgeConv(torch.nn.Module):
         x_i = x.repeat(1, 1, k)
         x_j = index_select(x, index)
         feature = self.nn(torch.cat([x_i, x_j - x_i], dim=1))
+
+        r_matix = torch.matmul(feature.transpose(1,2), feature)
+        att = torch.softmax(r_matix, dim=1)
+        feature = torch.matmul(feature, att)
         if self.diss:
             pos_i = pos.repeat(1, 1, k)
             pos_j = index_select(pos, index)
-            vec = pos_j  - pos_i
+            vec = pos_j - pos_i
             dis = torch.sqrt(torch.sum(torch.square(vec), dim=1, keepdim=True))
             scale = 2 * torch.sigmoid(-dis)
             max_value, _ = torch.max(scale*feature, -1, keepdim=True)
