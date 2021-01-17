@@ -63,6 +63,7 @@ class PillarVFE(VFETemplate):
         self.use_norm = self.model_cfg.USE_NORM
         self.with_distance = self.model_cfg.WITH_DISTANCE
         self.use_absolute_xyz = self.model_cfg.USE_ABSLOTE_XYZ
+        self.symmetry = self.model_cfg.SYMMETRY
 
         num_point_features += 6 if self.use_absolute_xyz else 3
         if self.with_distance:
@@ -89,7 +90,7 @@ class PillarVFE(VFETemplate):
         self.z_offset = self.voxel_z / 2 + point_cloud_range[2]
 
     def get_output_feature_dim(self):
-        return self.num_filters[-1]
+        return self.num_filters[-1] if not self.symmetry else 2*self.num_filters[-1]
 
     def get_paddings_indicator(self, actual_num, max_num, axis=0):
         actual_num = torch.unsqueeze(actual_num, axis + 1)
@@ -121,6 +122,7 @@ class PillarVFE(VFETemplate):
         else:
             features = [voxel_features[..., 3:], f_cluster, f_center]
 
+
         if self.with_distance:
             points_dist = torch.norm(voxel_features[:, :, :3], 2, 2, keepdim=True)
             features.append(points_dist)
@@ -130,9 +132,20 @@ class PillarVFE(VFETemplate):
         mask = self.get_paddings_indicator(voxel_num_points, voxel_count, axis=0)
         mask = torch.unsqueeze(mask, -1).type_as(voxel_features)
         features *= mask
+
+        if self.symmetry:
+            s_features = features.clone()
+            s_features[:, :,[2, 6, 9]] *= -1
+
         for pfn in self.pfn_layers:
             features = pfn(features)
         features = features.squeeze()
+
+        if self.symmetry:
+            for pfn in self.pfn_layers:
+                s_features = pfn(s_features)
+            s_features = s_features.squeeze()
+            features = torch.cat([features, s_features], dim=1)
 
         batch_dict['pillar_features'] = features
         return batch_dict

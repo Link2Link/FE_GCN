@@ -1,1 +1,1 @@
-python -m torch.distributed.launch --nproc_per_node=4 train.py --launcher pytorch --batch_size 4 --extra_tag WGCN7_DISS --cfg_file cfgs/WGCN7_DISS_ATT.yaml
+CUDA_VISIBLE_DEVICES=2,3,4,5,6,7,8,9 python -m torch.distributed.launch --nproc_per_node=8 train.py --launcher pytorch --batch_size 8 --extra_tag VFE_L1K64_GCN_L3DISS --cfg_file cfgs/GCNVFE.yaml
