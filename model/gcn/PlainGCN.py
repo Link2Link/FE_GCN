@@ -36,12 +36,12 @@ class PlainGCN(torch.nn.Module):
         batch_idx = coords[:, 0].long()
 
         if not self.dgn:                        # static graph
-            index = knn(pos, batch_idx, k=16)
+            index = knn(pos, batch_idx, k=9)
             for model in self.models:
                 features = model(features, index, pos)
         else:
             for model in self.models:
-                index = knn(features, batch_idx, k=16)
+                index = knn(features, batch_idx, k=9)
                 features = model(features, index, pos)
 
 

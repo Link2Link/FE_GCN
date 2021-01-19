@@ -159,6 +159,7 @@ class GCNVFE(VFETemplate):
         batch_idx = bidx_vidx_pos[:, 0].long()
         feature = feature.unsqueeze(-1)
 
+
         if self.cylinder:
             index = knn(pos[:, :2, :], batch_idx, k=self.k)
         else:

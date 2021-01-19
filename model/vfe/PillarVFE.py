@@ -82,6 +82,17 @@ class PillarVFE(VFETemplate):
             )
         self.pfn_layers = nn.ModuleList(pfn_layers)
 
+        if self.symmetry:
+            pfn_layers_s = []
+            for i in range(len(num_filters) - 1):
+                in_filters = num_filters[i]
+                out_filters = num_filters[i + 1]
+                pfn_layers_s.append(
+                    PFNLayer(in_filters, out_filters, self.use_norm, last_layer=(i >= len(num_filters) - 2))
+                )
+            self.pfn_layers_s = nn.ModuleList(pfn_layers_s)
+
+
         self.voxel_x = voxel_size[0]
         self.voxel_y = voxel_size[1]
         self.voxel_z = voxel_size[2]
@@ -142,7 +153,7 @@ class PillarVFE(VFETemplate):
         features = features.squeeze()
 
         if self.symmetry:
-            for pfn in self.pfn_layers:
+            for pfn in self.pfn_layers_s:
                 s_features = pfn(s_features)
             s_features = s_features.squeeze()
             features = torch.cat([features, s_features], dim=1)
