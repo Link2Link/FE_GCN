@@ -21,10 +21,11 @@ def pointwise_distance(x, y, square=True):
     with torch.no_grad():
         x = x.squeeze(-1)
         y = y.squeeze(-1)
-        inner = -2 * torch.matmul(x, y.transpose(0, 1))
-        x_square = torch.sum(torch.square(x), dim=-1, keepdim=True)
-        y_square = torch.sum(torch.square(y), dim=-1, keepdim=True)
-        dis = x_square + inner + y_square.transpose(0, 1)
+
+        x = x.unsqueeze(-1)
+        y = y.transpose(0,1).unsqueeze(0)
+        diff = x - y
+        dis = torch.sum(torch.square(diff), dim=1)
         if square:
             return dis
         else:

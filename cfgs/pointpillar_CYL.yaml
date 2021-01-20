@@ -51,16 +51,17 @@ MODEL:
     NAME: PointPillar
 
     VFE:
-        NAME: PillarVFE
+        NAME: PillarVFE_CYL
         WITH_DISTANCE: False
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
         NUM_FILTERS: [64]
         SYMMETRY: False
+        CYLINDER: [0.08, 0.16, 0.32]
 
     MAP_TO_BEV:
         NAME: PointPillarScatter
-        NUM_BEV_FEATURES: 64
+        NUM_BEV_FEATURES: 192
 
     BACKBONE_2D:
         NAME: BaseBEVBackbone
