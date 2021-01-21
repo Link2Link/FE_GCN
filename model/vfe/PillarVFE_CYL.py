@@ -43,6 +43,8 @@ class PFNLayer(nn.Module):
             x = torch.cat(part_linear_out, dim=0)
         else:
             x = self.linear(inputs)
+        # print('weight', self.linear.weight.shape, torch.max(self.linear.weight), torch.min(self.linear.weight))
+        # print('input', inputs.shape, torch.max(inputs), torch.min(inputs))
         torch.backends.cudnn.enabled = False
         x = self.norm(x.permute(0, 2, 1)).permute(0, 2, 1) if self.use_norm else x
         torch.backends.cudnn.enabled = True
@@ -201,6 +203,7 @@ class PillarVFE(VFETemplate):
 
         points = batch_dict['points']
         cylinders, numbers, masks = self.cylinder_search(voxel_pos, points, voxel_num_points)
+
         points_mean = cylinders[:, :, :3, :].sum(dim=1, keepdim=True) / numbers.type_as(cylinders).unsqueeze(1).unsqueeze(1)
 
         f_cluster = cylinders[:, :, :3, :] - points_mean
@@ -220,29 +223,23 @@ class PillarVFE(VFETemplate):
             s_features = features.clone()
             s_features[:, :, [2, 6, 9], :] *= -1
 
-
-
         for pfn in self.pfn_layers0:
-            features0 = pfn(features[..., 0])
+            features0 = pfn(features[..., 0].contiguous())
         features0 = features0.squeeze()
 
         for pfn in self.pfn_layers1:
-            features1 = pfn(features[..., 1])
+            features1 = pfn(features[..., 1].contiguous())
         features1 = features1.squeeze()
 
         for pfn in self.pfn_layers2:
-            features2 = pfn(features[..., 2])
+            features2 = pfn(features[..., 2].contiguous())
         features2 = features2.squeeze()
+
 
         features = torch.cat([features0, features1, features2], dim=-1)
 
-        if self.symmetry:
-            for pfn in self.pfn_layers_s:
-                s_features = pfn(s_features)
-            s_features = s_features.squeeze()
-            features = torch.cat([features, s_features], dim=1)
 
-        batch_dict['pillar_features'] = features
+        batch_dict['pillar_features'] = features2
 
         return batch_dict
 

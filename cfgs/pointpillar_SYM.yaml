@@ -56,7 +56,8 @@ MODEL:
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
         NUM_FILTERS: [64]
-        SYMMETRY: True
+        SYMMETRY: [z, r]
+
 
     MAP_TO_BEV:
         NAME: PointPillarScatter

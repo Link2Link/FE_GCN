@@ -26,6 +26,8 @@ def pointwise_distance(x, y, square=True):
         y = y.transpose(0,1).unsqueeze(0)
         diff = x - y
         dis = torch.sum(torch.square(diff), dim=1)
+        if torch.min(dis) < 0:
+            raise RuntimeError('dis small than 0')
         if square:
             return dis
         else:

@@ -149,7 +149,10 @@ class PillarVFE(VFETemplate):
 
         if self.symmetry:
             s_features = features.clone()
-            s_features[:, :,[2, 6, 9]] *= -1
+            if 'z' in self.symmetry:
+                s_features[:, :,[2, 6, 9]] *= -1
+            if 'r' in self.symmetry:
+                s_features[:, :, 3] *= -1
 
         for pfn in self.pfn_layers:
             features = pfn(features)
