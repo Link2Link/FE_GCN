@@ -60,6 +60,8 @@ class GCNVFE(VFETemplate):
         self.use_absolute_xyz = self.model_cfg.USE_ABSLOTE_XYZ
         self.cylinder = self.model_cfg.CYLINDER
         self.k = self.model_cfg.K
+        self.symmetry = self.model_cfg.SYMMETRY
+
         num_point_features += 0
 
         self.num_filters = self.model_cfg.NUM_FILTERS
@@ -91,8 +93,20 @@ class GCNVFE(VFETemplate):
             )
         self.gcns = nn.ModuleList(gcn)
 
+        gcn_s = []
+        for i in range(len(num_filters) - 1):
+            in_filters = num_filters[i]
+            out_filters = num_filters[i + 1]
+            gcn_s.append(
+                EdgeConv(in_filters, out_filters, act='relu', norm='batch', bias=True, diss=True)
+            )
+        self.gcn_s = nn.ModuleList(gcn_s)
+
+
 
     def get_output_feature_dim(self):
+        if self.symmetry:
+            return self.num_filters[-1]*2
         return self.num_filters[-1]
 
 
@@ -154,11 +168,17 @@ class GCNVFE(VFETemplate):
         voxel_pos = torch.cat([batch_idx, voxel_idx, voxel_pos], dim=-1)
         feature, bidx_vidx_pos, g_mask = self.voxels2points(voxel_features, voxel_pos, voxel_num_points)
 
+
         # gcn on entire point cloud
         pos = bidx_vidx_pos[:, -3:].unsqueeze(-1)
         batch_idx = bidx_vidx_pos[:, 0].long()
         feature = feature.unsqueeze(-1)
-
+        if self.symmetry:
+            feature_s = feature.clone()
+            if 'z' in self.symmetry:
+                feature_s[:, 2] *= -1
+            if 'r' in self.symmetry:
+                feature_s[:, 3] *= -1
 
         if self.cylinder:
             index = knn(pos[:, :2, :], batch_idx, k=self.k)
@@ -167,6 +187,12 @@ class GCNVFE(VFETemplate):
         for model in self.gcns:
             feature = model(feature, index, pos)
         feature = feature.squeeze(-1)
+
+        if self.symmetry:
+            for model in self.gcn_s:
+                feature_s = model(feature_s, index, pos)
+            feature_s = feature_s.squeeze(-1)
+            feature = torch.cat([feature, feature_s], dim=-1)
 
         voxel_features_new = torch.zeros(voxel_features.shape[0]*voxel_features.shape[1], self.get_output_feature_dim(), device=voxel_features.device)
         voxel_features_new[g_mask] = feature

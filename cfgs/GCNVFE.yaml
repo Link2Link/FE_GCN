@@ -59,11 +59,12 @@ MODEL:
         NUM_FILTERS: [64]
         CYLINDER: True
         K: 64
+        SYMMETRY: [z, r]
 
 
     GCN:
         NAME: PlainGCN
-        NUM_FILTERS: [64, 64, 64]
+        NUM_FILTERS: [128, 128, 128]
         ACT: relu
         NORM: batch
         BIAS: True
@@ -73,7 +74,7 @@ MODEL:
 
     MAP_TO_BEV:
         NAME: PointPillarScatter
-        NUM_BEV_FEATURES: 64
+        NUM_BEV_FEATURES: 128
 
     BACKBONE_2D:
         NAME: BaseBEVBackbone
