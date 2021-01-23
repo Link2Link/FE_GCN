@@ -23,7 +23,9 @@ class PlainGCN(torch.nn.Module):
         if self.sym:
             input_channels = int(input_channels/2)
 
-        channels = [input_channels] + self.num_filters
+        channels = [input_channels]
+        for f_num in self.num_filters:
+            channels += [f_num] if not self.sym else [int(f_num/2)]
         self.channels = channels
         self.num_point_features = channels[-1] if not self.sym else channels[-1]*2
         model_list = []
