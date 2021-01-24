@@ -59,7 +59,7 @@ MODEL:
         NUM_FILTERS: [64]
         CYLINDER: True
         K: 64
-        SYMMETRY: [z, r]
+        SYMMETRY: None
 
 
     GCN:
@@ -72,11 +72,11 @@ MODEL:
         SUM: False
         DISS: True
         K: 9
-        SYMMETRY: True
+        SYMMETRY: False
 
     MAP_TO_BEV:
         NAME: PointPillarScatter
-        NUM_BEV_FEATURES: 128
+        NUM_BEV_FEATURES: 64
 
     BACKBONE_2D:
         NAME: BaseBEVBackbone
