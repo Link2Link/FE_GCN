@@ -56,7 +56,9 @@ MODEL:
         USE_ABSLOTE_XYZ: True
         USE_NORM: True
         NUM_FILTERS: [64]
-        SYMMETRY: True
+        K: 64
+        SYMMETRY: None
+
 
     GCN:
         NAME: PlainGCN
@@ -68,6 +70,8 @@ MODEL:
         SUM: False
         RELU: False
         DISS: True
+        K: 16
+        SYMMETRY: False
 
     MAP_TO_BEV:
         NAME: PointPillarScatter
