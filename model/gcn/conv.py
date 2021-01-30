@@ -63,8 +63,8 @@ class EdgeConv(torch.nn.Module):
         super(EdgeConv, self).__init__()
         self.nn = BasicConv([in_channels * 2, out_channels], act, norm, bias)
         self.diss = diss
-        self.linear = BasicConv([out_channels, int(out_channels/4)], act=None, norm=None, bias=True)
-        self.linear2 = BasicConv([out_channels, int(out_channels/4)], act=None, norm=None, bias=True)
+        self.linear = BasicConv([out_channels, 1], act=None, norm=None, bias=False)
+        self.linear2 = BasicConv([out_channels, 1], act=None, norm=None, bias=False)
 
     def forward(self, x, index, pos):
 

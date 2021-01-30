@@ -70,7 +70,7 @@ MODEL:
         SUM: False
         RELU: False
         DISS: True
-        K: 16
+        K: 9
         SYMMETRY: False
 
     MAP_TO_BEV:
