@@ -165,6 +165,7 @@ class PillarVFE(VFETemplate):
             features = torch.cat([features, s_features], dim=1)
 
         batch_dict['pillar_features'] = features
+
         return batch_dict
 
     def print(self, batch_dict):
