@@ -9,7 +9,7 @@ from model import sampler, backbone, roi_head
 from pcdet.models import roi_heads
 from model import gcn, vfe
 
-class GCN_Pillar(Detector3DTemplate):
+class SATGCN(Detector3DTemplate):
     def __init__(self, model_cfg, num_class, dataset, args):
         super().__init__(model_cfg=model_cfg, num_class=num_class, dataset=dataset)
         self.module_topology = [

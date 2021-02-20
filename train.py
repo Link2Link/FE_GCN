@@ -21,7 +21,7 @@ from pcdet.datasets import build_dataloader
 from pcdet.models import build_network, model_fn_decorator
 from pcdet.utils import common_utils
 from tensorboardX import SummaryWriter
-from architecture import GCN_Pillar
+from architecture import SATGCN
 from test import repeat_eval_ckpt
 
 from train_utils.optimization import build_optimizer, build_scheduler
@@ -29,7 +29,7 @@ from train_utils.train_utils import train_model
 # python -m torch.distributed.launch --nproc_per_node=4 main.py --launcher pytorch --batch_size 4
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--cfg_file', type=str, default='cfgs/PlainGCNpillar.yaml', help='specify the config for training')
+    parser.add_argument('--cfg_file', type=str, default='cfgs/pointpillar_FE.yaml', help='specify the config for training')
 
     parser.add_argument('--batch_size', type=int, default=1, required=False, help='batch size for training')
     parser.add_argument('--epochs', type=int, default=None, required=False, help='number of epochs to train for')
@@ -123,7 +123,7 @@ if __name__ == '__main__':
     )
 
     # model = build_network(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=train_set)
-    model = GCN_Pillar(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=train_set, args=args)
+    model = SATGCN(model_cfg=cfg.MODEL, num_class=len(cfg.CLASS_NAMES), dataset=train_set, args=args)
     if args.sync_bn:
         model = torch.nn.SyncBatchNorm.convert_sync_batchnorm(model)
     model.cuda()
