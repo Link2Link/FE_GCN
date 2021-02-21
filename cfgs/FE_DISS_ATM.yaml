@@ -70,7 +70,9 @@ MODEL:
       DISS: True
       K: 9
       SYMMETRY: False
+      ATT: True
       MERGE: True
+
 
     MAP_TO_BEV:
         NAME: PointPillarScatter

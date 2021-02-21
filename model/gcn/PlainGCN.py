@@ -19,6 +19,7 @@ class PlainGCN(torch.nn.Module):
         self.diss = model_cfg.DISS
         self.sym = model_cfg.SYMMETRY
         self.merge = model_cfg.MERGE
+        self.att = model_cfg.ATT
 
         if self.sym:
             input_channels = int(input_channels/2)
@@ -32,7 +33,7 @@ class PlainGCN(torch.nn.Module):
         for i in range(len(channels) - 1):
             in_c = channels[i]
             out_c = channels[i + 1]
-            model_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias, diss=self.diss, merge=self.merge)]
+            model_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias, diss=self.diss, merge=self.merge, att=self.att)]
 
         self.models = ModuleList(model_list)
 
