@@ -2,6 +2,8 @@ import torch
 from torch import nn
 from torch.nn import Sequential as Seq, Linear as Lin, Conv1d
 from .tools import *
+from torch.nn.parameter import Parameter
+import numpy as np
 
 def act_layer(act, inplace=False, neg_slope=0.2, n_prelu=1):
     # activation layer

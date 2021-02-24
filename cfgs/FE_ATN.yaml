@@ -67,7 +67,7 @@ MODEL:
       DYN_GRAPH: False
       SUM: False
       RELU: Falsee
-      DISS: False
+      FDFS: False
       K: 9
       SYMMETRY: False
       ATT: True

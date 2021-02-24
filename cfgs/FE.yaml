@@ -69,7 +69,6 @@ MODEL:
       RELU: False
       FDFS: False
       K: 9
-      SYMMETRY: False
       ATT: False
       MERGE: False
 

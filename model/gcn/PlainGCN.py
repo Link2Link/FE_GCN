@@ -37,37 +37,19 @@ class PlainGCN(torch.nn.Module):
 
         self.models = ModuleList(model_list)
 
-        if self.sym:
-            model_s_list = []
-            for i in range(len(channels) - 1):
-                in_c = channels[i]
-                out_c = channels[i + 1]
-                model_s_list += [EdgeConv(in_c, out_c, act=self.act, norm=self.norm, bias=self.bias, diss=self.fdfs)]
-            self.models_s = ModuleList(model_s_list)
-
     def forward(self, batch_dict):
         coords = batch_dict['voxel_coords']
         features = batch_dict['pillar_features'].unsqueeze(-1)
-        if self.sym:
-            feature_o = features[:, :self.channels[0], :]
-            feature_s = features[:, self.channels[0]:, :]
 
         pos = coords[:, 1:4].unsqueeze(-1)
         batch_idx = coords[:, 0].long()
 
         index = knn(pos, batch_idx, k=self.k)
-        if self.sym:
-            for model, model_s in zip(self.models, self.models_s):
-                if self.dgn:
-                    index = knn(feature_o, batch_idx, k=9)
-                feature_o = model(feature_o, index, pos)
-                feature_s = model_s(feature_s, index, pos)
-            features = torch.cat([feature_o, feature_s], dim=1)
-        else:
-            for model in self.models:
-                if self.dgn:
-                    index = knn(features, batch_idx, k=9)
-                features = model(features, index, pos)
+
+        for model in self.models:
+            if self.dgn:
+                index = knn(features, batch_idx, k=self.kz)
+            features = model(features, index, pos)
 
         features = features.squeeze()
 
