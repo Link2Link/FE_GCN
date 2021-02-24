@@ -1,7 +1,6 @@
 from .ResGCN import ResGCN
-from .PlainGCN import PlainGCN, PlainGCN3D
+from .PlainGCN import PlainGCN
 __all__ = {
     'PlainGCN': PlainGCN,
     'ResGCN': ResGCN,
-    'PlainGCN3D': PlainGCN3D,
 }

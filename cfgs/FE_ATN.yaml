@@ -66,7 +66,7 @@ MODEL:
       BIAS: True
       DYN_GRAPH: False
       SUM: False
-      RELU: False
+      RELU: Falsee
       DISS: False
       K: 9
       SYMMETRY: False
