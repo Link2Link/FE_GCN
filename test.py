@@ -19,7 +19,7 @@ from architecture import SATGCN
 
 def parse_config():
     parser = argparse.ArgumentParser(description='arg parser')
-    parser.add_argument('--cfg_file', type=str, default='cfgs/PartA2_free.yaml', help='specify the config for training')
+    parser.add_argument('--cfg_file', type=str, default='cfgs/pointpillar.yaml', help='specify the config for training')
 
     parser.add_argument('--batch_size', type=int, default=1, required=False, help='batch size for training')
     parser.add_argument('--workers', type=int, default=4, help='number of workers for dataloader')
