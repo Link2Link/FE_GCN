@@ -40,9 +40,6 @@ class PlainGCN(torch.nn.Module):
     def forward(self, batch_dict):
         coords = batch_dict['voxel_coords']
         features = batch_dict['pillar_features'].unsqueeze(-1)
-        print(features.shape, coords.shape)
-        print(features, coords)
-        raise RuntimeError
 
         pos = coords[:, 1:4].unsqueeze(-1)
         batch_idx = coords[:, 0].long()
